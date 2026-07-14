@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import type { MapData, Marker, Mode, GalleryImage, Skin } from '@/types';
+import type { MapData, Marker, MarkerType, Mode, GalleryImage, Skin } from '@/types';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Toolbar } from '@/components/Toolbar';
 import { MapCanvas } from '@/components/MapCanvas';
@@ -14,6 +14,12 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
+const DEFAULT_MARKER_TYPES: MarkerType[] = [
+  { id: 'red', name: '刷红点位', color: '#ef4444', glowColor: '#ff00ff', icon: 'Skull', builtin: true },
+  { id: 'card', name: '刷卡点位', color: '#3b82f6', glowColor: '#00f5ff', icon: 'Key', builtin: true },
+  { id: 'spawn', name: '出生点', color: '#22c55e', glowColor: '#00ff88', icon: 'MapPin', builtin: true },
+];
+
 function MapApp() {
   const [mode, setMode] = useState<Mode>('view');
   const [maps, setMaps] = useLocalStorage<MapData[]>('deltaMaps', []);
@@ -21,6 +27,7 @@ function MapApp() {
   const [markers, setMarkers] = useLocalStorage<Marker[]>('deltaMarkers', []);
   const [galleryImages, setGalleryImages] = useLocalStorage<GalleryImage[]>('deltaGallery', []);
   const [skin, setSkin] = useLocalStorage<Skin>('deltaSkin', 'skin1');
+  const [markerTypes, setMarkerTypes] = useLocalStorage<MarkerType[]>('deltaMarkerTypes', DEFAULT_MARKER_TYPES);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showAddMarkerModal, setShowAddMarkerModal] = useState(false);
@@ -85,7 +92,7 @@ function MapApp() {
     }
   };
 
-  const handleAddMarker = (type: 'red' | 'card', name: string, imageBase64: string, description: string, iconImage: string, iconSize: number) => {
+  const handleAddMarker = (type: string, name: string, imageBase64: string, description: string, iconImage: string, iconSize: number) => {
     if (!currentMap) return;
     if (imageBase64) {
       const exists = galleryImages.some(img => img.imageBase64 === imageBase64);
@@ -190,6 +197,23 @@ function MapApp() {
     setGallerySelectCallback(null);
   };
 
+  const handleAddMarkerType = (name: string, color: string, icon: string) => {
+    const newType: MarkerType = {
+      id: generateId(),
+      name,
+      color,
+      glowColor: color,
+      icon,
+      builtin: false,
+    };
+    setMarkerTypes(prev => [...prev, newType]);
+  };
+
+  const handleDeleteMarkerType = (typeId: string) => {
+    setMarkerTypes(prev => prev.filter(t => t.id !== typeId));
+    setMarkers(prev => prev.filter(m => m.type !== typeId));
+  };
+
   const handleClearData = () => setShowClearConfirm(true);
 
   const confirmClearData = () => {
@@ -197,6 +221,7 @@ function MapApp() {
     setCurrentMapId(null);
     setMarkers([]);
     setGalleryImages([]);
+    setMarkerTypes(DEFAULT_MARKER_TYPES);
     setMode('view');
     setShowClearConfirm(false);
   };
@@ -222,6 +247,7 @@ function MapApp() {
         <Toolbar
           mode={mode}
           skin={skin}
+          markerTypes={markerTypes}
           onModeChange={handleModeChange}
           onSkinChange={handleSkinChange}
           onUploadMap={() => setShowUploadModal(true)}
@@ -258,7 +284,7 @@ function MapApp() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs ${skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-500'}`}>
-                  刷红: {currentMarkers.filter(m => m.type === 'red').length} | 刷卡: {currentMarkers.filter(m => m.type === 'card').length}
+                  {markerTypes.map(t => `${t.name}: ${currentMarkers.filter(m => m.type === t.id).length}`).join(' | ')}
                 </span>
               </div>
             </div>
@@ -271,6 +297,7 @@ function MapApp() {
             markers={currentMarkers}
             mode={mode}
             skin={skin}
+            markerTypes={markerTypes}
             onMarkerClick={handleMarkerClick}
             onMapClick={handleMapClick}
             isMobile={isMobile}
@@ -283,6 +310,7 @@ function MapApp() {
         <Toolbar
           mode={mode}
           skin={skin}
+          markerTypes={markerTypes}
           onModeChange={handleModeChange}
           onSkinChange={handleSkinChange}
           onUploadMap={() => setShowUploadModal(true)}
@@ -310,16 +338,20 @@ function MapApp() {
       {showAddMarkerModal && (
         <AddMarkerModal
           skin={skin}
+          markerTypes={markerTypes}
           x={addMarkerPosition.x} y={addMarkerPosition.y}
           onClose={() => { setShowAddMarkerModal(false); setEditingMarker(null); }}
           onSave={handleAddMarker} editMarker={editingMarker}
           onOpenGallery={handleSelectFromGallery} onOpenIconGallery={handleSelectFromGallery}
+          onAddMarkerType={handleAddMarkerType}
+          onDeleteMarkerType={handleDeleteMarkerType}
         />
       )}
 
       {showMarkerPopup && selectedMarker && (
         <MarkerPopup
           skin={skin}
+          markerTypes={markerTypes}
           marker={selectedMarker}
           onClose={() => { setShowMarkerPopup(false); setSelectedMarker(null); }}
           onEdit={() => {

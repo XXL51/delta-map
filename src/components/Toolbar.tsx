@@ -1,10 +1,11 @@
-import { Eye, Edit3, Upload, Map, Skull, Key, Download, Upload as UploadIcon, Trash2, Menu, X, ChevronUp, ChevronDown, Images, RefreshCw, Palette, ChevronRight } from 'lucide-react';
-import type { MapData, Mode, Marker, Skin } from '@/types';
+import { Eye, Edit3, Upload, Map, Download, Upload as UploadIcon, Trash2, Menu, X, ChevronUp, ChevronDown, Images, RefreshCw, Palette, ChevronRight } from 'lucide-react';
+import type { MapData, Mode, Marker, MarkerType, Skin } from '@/types';
 import { useState } from 'react';
 
 interface ToolbarProps {
   mode: Mode;
   skin: Skin;
+  markerTypes: MarkerType[];
   onModeChange: (mode: Mode) => void;
   onSkinChange: (skin: Skin) => void;
   onUploadMap: () => void;
@@ -24,9 +25,7 @@ interface ToolbarProps {
   onShow?: () => void;
 }
 
-export function Toolbar({ mode, skin, onModeChange, onSkinChange, onUploadMap, onExportData, onImportData, onOpenGallery, onClearData, onClearCache, maps, currentMapId, onSwitchMap, onDeleteMap, markers, isMobile = false, show = true, onHide, onShow }: ToolbarProps) {
-  const redCount = markers.filter((m) => m.type === 'red').length;
-  const cardCount = markers.filter((m) => m.type === 'card').length;
+export function Toolbar({ mode, skin, markerTypes, onModeChange, onSkinChange, onUploadMap, onExportData, onImportData, onOpenGallery, onClearData, onClearCache, maps, currentMapId, onSwitchMap, onDeleteMap, markers, isMobile = false, show = true, onHide, onShow }: ToolbarProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSkinDropdown, setShowSkinDropdown] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -65,7 +64,7 @@ export function Toolbar({ mode, skin, onModeChange, onSkinChange, onUploadMap, o
                 </div>
                 <div>
                   <p className={`text-xs ${skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-500'}`}>三角洲行动</p>
-                  <p className={`text-xs ${skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-400'}`}>{currentMap ? currentMap.name : '未选择'} | {redCount}红 {cardCount}卡</p>
+                  <p className={`text-xs ${skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-400'}`}>{currentMap ? currentMap.name : '未选择'} | {markerTypes.map(t => `${markers.filter(m => m.type === t.id).length}${t.name.charAt(0)}`).join(' ')}</p>
                 </div>
               </div>
               
@@ -587,36 +586,26 @@ export function Toolbar({ mode, skin, onModeChange, onSkinChange, onUploadMap, o
         }`}>
           <label className={`block text-sm font-medium mb-3 ${skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-400'}`}>标记统计</label>
           <div className="grid grid-cols-2 gap-3">
-            <div className={`rounded-xl p-3 transition-all duration-500 ${
-              skin === 'skin2'
-                ? 'bg-gradient-to-br from-[#ff00ff]/20 to-[#aa00aa]/10 border border-[#ff00ff]/30'
-                : 'bg-gradient-to-br from-red-900/30 to-red-800/10 border border-red-700/30'
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                  skin === 'skin2' ? 'bg-[#ff00ff]/20' : 'bg-red-600/20'
+            {markerTypes.map((mt) => {
+              const count = markers.filter((m) => m.type === mt.id).length;
+              return (
+                <div key={mt.id} className={`rounded-xl p-3 transition-all duration-500 ${
+                  skin === 'skin2'
+                    ? `bg-gradient-to-br from-[${mt.glowColor}]/20 to-[${mt.glowColor}]/10 border border-[${mt.glowColor}]/30`
+                    : 'bg-gradient-to-br from-slate-800/50 to-slate-900/30 border border-slate-700/30'
                 }`}>
-                  <Skull className={`w-4 h-4 ${skin === 'skin2' ? 'text-[#ff00ff]' : 'text-red-400'}`} />
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                      skin === 'skin2' ? `bg-[${mt.glowColor}]/20` : 'bg-slate-700/50'
+                    }`}>
+                      <span className={`w-3 h-3 rounded-full`} style={{ backgroundColor: mt.color }} />
+                    </div>
+                    <span className={`text-xs ${skin === 'skin2' ? `text-[${mt.glowColor}]` : 'text-slate-400'}`}>{mt.name}</span>
+                  </div>
+                  <span className={`text-2xl font-bold ${skin === 'skin2' ? `text-[${mt.glowColor}]` : 'text-slate-300'}`}>{count}</span>
                 </div>
-                <span className={`text-xs ${skin === 'skin2' ? 'text-[#ff00ff]' : 'text-red-400'}`}>刷红点位</span>
-              </div>
-              <span className={`text-2xl font-bold ${skin === 'skin2' ? 'text-[#ff00ff]' : 'text-red-400'}`}>{redCount}</span>
-            </div>
-            <div className={`rounded-xl p-3 transition-all duration-500 ${
-              skin === 'skin2'
-                ? 'bg-gradient-to-br from-[#00f5ff]/20 to-[#0088aa]/10 border border-[#00f5ff]/30'
-                : 'bg-gradient-to-br from-blue-900/30 to-blue-800/10 border border-blue-700/30'
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                  skin === 'skin2' ? 'bg-[#00f5ff]/20' : 'bg-blue-600/20'
-                }`}>
-                  <Key className={`w-4 h-4 ${skin === 'skin2' ? 'text-[#00f5ff]' : 'text-blue-400'}`} />
-                </div>
-                <span className={`text-xs ${skin === 'skin2' ? 'text-[#00f5ff]' : 'text-blue-400'}`}>刷卡点位</span>
-              </div>
-              <span className={`text-2xl font-bold ${skin === 'skin2' ? 'text-[#00f5ff]' : 'text-blue-400'}`}>{cardCount}</span>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>

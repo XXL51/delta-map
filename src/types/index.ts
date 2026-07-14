@@ -7,10 +7,19 @@ export interface MapData {
   createdAt: number;
 }
 
+export interface MarkerType {
+  id: string;
+  name: string;
+  color: string;
+  glowColor: string;
+  icon: string; // lucide icon name
+  builtin: boolean;
+}
+
 export interface Marker {
   id: string;
   mapId: string;
-  type: 'red' | 'card';
+  type: string;
   name: string;
   x: number;
   y: number;

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Skull, Key, Edit2, Trash2, X, ZoomIn } from 'lucide-react';
-import type { Marker, Skin } from '@/types';
+import { Edit2, Trash2, X, ZoomIn, icons } from 'lucide-react';
+import type { Marker, MarkerType, Skin } from '@/types';
 
 interface MarkerPopupProps {
   marker: Marker;
+  markerTypes: MarkerType[];
   skin: Skin;
   onClose: () => void;
   onEdit: () => void;
@@ -11,10 +12,18 @@ interface MarkerPopupProps {
   isEditMode: boolean;
 }
 
-export function MarkerPopup({ marker, skin, onClose, onEdit, onDelete, isEditMode }: MarkerPopupProps) {
-  const isRed = marker.type === 'red';
+export function MarkerPopup({ marker, markerTypes, skin, onClose, onEdit, onDelete, isEditMode }: MarkerPopupProps) {
   const [showImageViewer, setShowImageViewer] = useState(false);
   const iconSize = marker.iconSize ?? 40;
+  const markerType = markerTypes.find(t => t.id === marker.type);
+
+  const TypeIconComponent = ({ iconName, className, style }: { iconName: string; className?: string; style?: React.CSSProperties }) => {
+    const LucideIcon = (icons as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[iconName];
+    if (LucideIcon) {
+      return <LucideIcon className={className} style={style} />;
+    }
+    return null;
+  };
 
   return (
     <>
@@ -34,26 +43,20 @@ export function MarkerPopup({ marker, skin, onClose, onEdit, onDelete, isEditMod
           <div className="flex items-center gap-3">
             <div
               className={`rounded-full flex items-center justify-center border-2 overflow-hidden flex-shrink-0 transition-all duration-300 ${
-                marker.iconImage
-                  ? skin === 'skin2' ? 'bg-[#12121a] border-[#00f5ff]' : 'bg-military-900 border-military-400'
-                  : isRed
-                  ? skin === 'skin2' ? 'bg-[#ff00ff] border-[#ff88ff]' : 'bg-red-600 border-red-400'
-                  : skin === 'skin2' ? 'bg-[#00f5ff] border-[#00ffff]' : 'bg-blue-600 border-blue-400'
-              } ${skin === 'skin2' ? 'shadow-[0_0_15px_rgba(0,245,255,0.5)]' : ''}`}
+                skin === 'skin2' ? `shadow-[0_0_15px_${markerType?.glowColor || '#8888aa'}80]` : ''
+              }`}
               style={{
                 width: `${iconSize}px`,
                 height: `${iconSize}px`,
+                backgroundColor: marker.iconImage ? (skin === 'skin2' ? '#12121a' : '#0f172a') : (markerType?.color || '#64748b'),
+                borderColor: marker.iconImage ? (skin === 'skin2' ? '#00f5ff' : '#64748b') : (markerType?.color || '#64748b'),
               }}
             >
               {marker.iconImage ? (
                 <img src={marker.iconImage} alt="图标" className="w-full h-full object-cover" />
-              ) : isRed ? (
-                <Skull
-                  className="text-white"
-                  style={{ width: `${iconSize * 0.5}px`, height: `${iconSize * 0.5}px` }}
-                />
               ) : (
-                <Key
+                <TypeIconComponent
+                  iconName={markerType?.icon || 'MapPin'}
                   className="text-white"
                   style={{ width: `${iconSize * 0.5}px`, height: `${iconSize * 0.5}px` }}
                 />
@@ -63,12 +66,12 @@ export function MarkerPopup({ marker, skin, onClose, onEdit, onDelete, isEditMod
               <h2 className={`text-base sm:text-lg font-semibold transition-all duration-500 ${
                 skin === 'skin2' ? 'text-white skin2-text-glow' : 'text-white'
               }`}>
-                {marker.name || (isRed ? '刷红点位' : '刷卡点位')}
+                {marker.name || (markerType?.name || '未知类型')}
               </h2>
               <p className={`text-xs sm:text-sm transition-all duration-500 ${
                 skin === 'skin2' ? 'text-[#8888aa]' : 'text-military-400'
               }`}>
-                {isRed ? '刷红点位' : '刷卡点位'} | 坐标: ({marker.x.toFixed(2)}, {marker.y.toFixed(2)})
+                {markerType?.name || '未知类型'} | 坐标: ({marker.x.toFixed(2)}, {marker.y.toFixed(2)})
               </p>
             </div>
           </div>

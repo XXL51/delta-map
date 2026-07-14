@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import type { MapData, Marker, Mode, Skin } from '@/types';
+import type { MapData, Marker, MarkerType, Mode, Skin } from '@/types';
 import { MarkerPoint } from './MarkerPoint';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 
@@ -8,13 +8,14 @@ interface MapCanvasProps {
   markers: Marker[];
   mode: Mode;
   skin: Skin;
+  markerTypes: MarkerType[];
   onMarkerClick: (marker: Marker) => void;
   onMapClick: (x: number, y: number) => void;
   isMobile?: boolean;
   onTap?: () => void;
 }
 
-export function MapCanvas({ mapData, markers, mode, skin, onMarkerClick, onMapClick, isMobile = false, onTap }: MapCanvasProps) {
+export function MapCanvas({ mapData, markers, mode, skin, markerTypes, onMarkerClick, onMapClick, isMobile = false, onTap }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -334,6 +335,7 @@ export function MapCanvas({ mapData, markers, mode, skin, onMarkerClick, onMapCl
               <MarkerPoint
                 key={marker.id}
                 marker={marker}
+                markerTypes={markerTypes}
                 onClick={() => onMarkerClick(marker)}
                 isEditMode={mode === 'edit'}
                 skin={skin}
