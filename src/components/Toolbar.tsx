@@ -90,7 +90,7 @@ export function Toolbar({ mode, onModeChange, onUploadMap, onExportData, onImpor
             </div>
             
             {showMobileMenu && (
-              <div className="px-4 pb-4 space-y-2">
+              <div className="px-4 pb-4 space-y-3">
                 {/* 地图选择器 */}
                 {maps.length > 0 && (
                   <div>
@@ -126,48 +126,53 @@ export function Toolbar({ mode, onModeChange, onUploadMap, onExportData, onImpor
                   </div>
                 )}
 
-                <button
-                  onClick={() => { onUploadMap(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span className="text-sm">上传地图</span>
-                </button>
-                <button
-                  onClick={() => { onOpenGallery(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
-                >
-                  <Images className="w-4 h-4" />
-                  <span className="text-sm">图片仓库</span>
-                </button>
-                <button
-                  onClick={() => { onExportData(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="text-sm">导出数据</span>
-                </button>
-                <button
-                  onClick={() => { onImportData(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
-                >
-                  <UploadIcon className="w-4 h-4" />
-                  <span className="text-sm">导入数据</span>
-                </button>
-                <button
-                  onClick={() => { onClearData(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-900/50 hover:bg-red-800/50 text-red-400 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span className="text-sm">清空数据</span>
-                </button>
-                <button
-                  onClick={() => { onClearCache(); setShowMobileMenu(false); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-900/50 hover:bg-orange-800/50 text-orange-400 rounded-lg transition-colors"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  <span className="text-sm">清除缓存</span>
-                </button>
+                <div>
+                  <label className="block text-xs text-military-500 mb-2">地图操作</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => { onUploadMap(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                    >
+                      <Upload className="w-5 h-5" />
+                      <span className="text-xs">上传地图</span>
+                    </button>
+                    <button
+                      onClick={() => { onOpenGallery(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+                    >
+                      <Images className="w-5 h-5" />
+                      <span className="text-xs">图片仓库</span>
+                    </button>
+                    <button
+                      onClick={() => { onExportData(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span className="text-xs">导出数据</span>
+                    </button>
+                    <button
+                      onClick={() => { onImportData(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+                    >
+                      <UploadIcon className="w-5 h-5" />
+                      <span className="text-xs">导入数据</span>
+                    </button>
+                    <button
+                      onClick={() => { onClearData(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-red-900/50 hover:bg-red-800/50 text-red-400 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                      <span className="text-xs">清空数据</span>
+                    </button>
+                    <button
+                      onClick={() => { onClearCache(); setShowMobileMenu(false); }}
+                      className="aspect-square flex flex-col items-center justify-center gap-1 bg-orange-900/50 hover:bg-orange-800/50 text-orange-400 rounded-lg transition-colors"
+                    >
+                      <RefreshCw className="w-5 h-5" />
+                      <span className="text-xs">清除缓存</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
             
@@ -233,48 +238,54 @@ export function Toolbar({ mode, onModeChange, onUploadMap, onExportData, onImpor
 
         <div>
           <label className="block text-sm font-medium text-military-400 mb-2">地图操作</label>
-          <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={onUploadMap}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+              title="上传地图"
             >
-              <Upload className="w-4 h-4" />
-              <span className="text-sm">上传地图</span>
+              <Upload className="w-5 h-5" />
+              <span className="text-xs">上传地图</span>
             </button>
             <button
               onClick={onOpenGallery}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              title="图片仓库"
             >
-              <Images className="w-4 h-4" />
-              <span className="text-sm">图片仓库</span>
+              <Images className="w-5 h-5" />
+              <span className="text-xs">图片仓库</span>
             </button>
             <button
               onClick={onExportData}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              title="导出数据"
             >
-              <Download className="w-4 h-4" />
-              <span className="text-sm">导出数据</span>
+              <Download className="w-5 h-5" />
+              <span className="text-xs">导出数据</span>
             </button>
             <button
               onClick={onImportData}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-military-700 hover:bg-military-600 text-military-300 rounded-lg transition-colors"
+              title="导入数据"
             >
-              <UploadIcon className="w-4 h-4" />
-              <span className="text-sm">导入数据</span>
+              <UploadIcon className="w-5 h-5" />
+              <span className="text-xs">导入数据</span>
             </button>
             <button
               onClick={onClearData}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-red-900/50 hover:bg-red-800/50 text-red-400 rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-red-900/50 hover:bg-red-800/50 text-red-400 rounded-lg transition-colors"
+              title="清空数据"
             >
-              <Trash2 className="w-4 h-4" />
-              <span className="text-sm">清空数据</span>
+              <Trash2 className="w-5 h-5" />
+              <span className="text-xs">清空数据</span>
             </button>
             <button
               onClick={onClearCache}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-orange-900/50 hover:bg-orange-800/50 text-orange-400 rounded-lg transition-colors"
+              className="aspect-square flex flex-col items-center justify-center gap-1 bg-orange-900/50 hover:bg-orange-800/50 text-orange-400 rounded-lg transition-colors"
+              title="清除缓存"
             >
-              <RefreshCw className="w-4 h-4" />
-              <span className="text-sm">清除缓存</span>
+              <RefreshCw className="w-5 h-5" />
+              <span className="text-xs">清除缓存</span>
             </button>
           </div>
         </div>
